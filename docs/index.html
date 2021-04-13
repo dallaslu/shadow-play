@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title></title>
+    <style>
+    .muted{
+    	opacity: .333;
+    }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <h1>{{ title }} <span class="muted">v{{meta.version}}</span></h1>
+        <p>{{ meta.author }}</p>
+        <!-- <p>{{ meta.gcm.name }}: {{ meta.gcm.url }}</p> -->
+        <h2>Examples</h2>
+        <ul>
+            <ul @each="e in examples"><a @href="{{e.url}}">{{e.name}}</a></ul>
+        </ul>
+    </div>
+    <script type="module">
+        import $ from './shadow-play.js';
+        const app = $.create({
+            title: 'ShadowPlay Documents',
+            meta: {
+            	author: 'Dallas Lu',
+            	version: '0.0.1'
+            },
+            examples: [{
+				name: 'Basic',
+				url: 'basic.html' 
+			},{
+				name: 'Loop',
+				url: 'loop.html'
+			}]
+        }, {
+
+        }, {}).possess('#app');
+    </script>
+</body>
+
+</html>

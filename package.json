@@ -1,0 +1,47 @@
+{
+  "name": "shadow-play",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:dallaslu/shadow-play.git"
+  },
+  "keywords": [
+    "Template",
+    "HTML"
+  ],
+  "author": "Dallas Lu",
+  "license": "ISC",
+  "devDependencies": {
+    "autoprefixer": "^9.8.6",
+    "babelify": "^6.1.3",
+    "brfs": "^1.4.1",
+    "browser-sync": "^2.26.13",
+    "delete": "^1.1.0",
+    "gulp": "^4.0.2",
+    "gulp-autoprefixer": "^7.0.1",
+    "gulp-browserify": "^0.5.1",
+    "gulp-concat": "^2.6.1",
+    "gulp-csso": "^4.0.1",
+    "gulp-filter": "^6.0.0",
+    "gulp-front-matter": "^1.3.0",
+    "gulp-html-beautify": "^1.0.1",
+    "gulp-htmltidy": "^0.2.4",
+    "gulp-rename": "^2.0.0",
+    "gulp-sass": "^4.0.2",
+    "gulp-sourcemaps": "^2.6.5",
+    "gulp-swig": "^0.9.1",
+    "gulp-terser": "^1.4.0",
+    "gulp-uglify": "^3.0.2",
+    "path": "^0.12.7",
+    "through2": "^3.0.2"
+  },
+  "dependencies": {},
+  "optionalDependencies": {
+    "fsevents": "*"
+  }
+}
