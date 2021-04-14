@@ -56,9 +56,10 @@ class NodeRenderer {
                 if (el.getAttribute('@href')) {
                     new TextRenderer({
                         template: el.getAttribute('@href')
-                    }).complete(
-                        result => el.href = result
-                    ).render(data, context);
+                    }).complete(result => {
+                        el.href = result;
+                        el.removeAttribute('@href');
+                    }).render(data, context);
                 }
                 return () => true;
             }

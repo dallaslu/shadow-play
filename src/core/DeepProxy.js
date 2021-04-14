@@ -6,17 +6,15 @@ class DeepProxy {
         let realHandler = {
             set: (target, propKey, value, receiver) => {
                 if (handler.set) {
-                    handler.set(target, propKey, value, receiver);
+                    return handler.set(target, propKey, value, receiver);
                 } else {
-                    target[propKey] = value;
+                    return Reflect.set(target, propKey, value, receiver)
                 }
-                return true;
             },
             get: (target, propKey, receiver) => {
-                let v = target[propKey];
+                let v = Reflect.get(target, propKey, receiver);
                 if (needProxy(v, propKey)) {
                     let p = createProxy(v);
-                    target[propKey] = p;
                     return p;
                 }
                 return handler.get(target, propKey, receiver);
@@ -24,24 +22,36 @@ class DeepProxy {
         };
 
         function needProxy(value, propKey) {
-            return typeof value === 'object' && typeof propKey !== 'symbol' && !value[symbol];
+            return typeof value === 'object' && typeof propKey !== 'symbol' && propKey !== symbol && !value[symbol];
         }
 
         function createProxy(value) {
             let p = proxy(value, realHandler, preProscessor, keyFilter);
-            p[symbol] = true;
+            p[symbol] = {
+                target: value
+            };
             return p;
+        }
+
+        function proxy(obj, handler, preProscessor, keyFilter) {
+            if (preProscessor) {
+                preProscessor(obj);
+            }
+            let proxy = new Proxy(obj, handler);
+            return proxy;
         }
 
         return proxy(obj, realHandler, preProscessor, keyFilter);
     }
+
+    static isDeepProxy(obj, symbol) {
+        return !!obj[symbol];
+    }
+
+    static getTarget(proxy, symbol) {
+        return isDeepProxy(proxy, symbol) ? proxy[symbol].target : undefined;
+    }
 }
 
-function proxy(obj, handler, preProscessor, keyFilter) {
-    if (preProscessor) {
-        preProscessor(obj);
-    }
-    let proxy = new Proxy(obj, handler);
-    return proxy;
-}
+
 export default DeepProxy;

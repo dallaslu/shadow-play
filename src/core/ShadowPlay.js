@@ -36,6 +36,9 @@ class ShadowPlay {
                         let watcherAttr = shadow.watchers = shadow.watchers || {};
                         let watchers = watcherAttr[propKey];
                         if (watchers) {
+                            if(!watchers.forEach){
+                                console.log('forEach is not function');
+                            }
                             watchers.forEach(f => updaters.push(f));
                         }
                     }

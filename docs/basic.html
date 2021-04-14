@@ -2,22 +2,23 @@
 <html>
 
 <head>
-    <title>Shadow Play Documents</title>
+    <title>Basic - Examples</title>
     <style>
-    .muted{
-    	opacity: .333;
+        .muted{
+        opacity: .333;
     }
     </style>
 </head>
 
 <body>
     <div id="app">
-        <h1>{{ title }} <span class="muted">v{{meta.version}}</span></h1>
+        <h1><a href="/">{{ title }} <span class="muted">v{{meta.version}}</span></a></h1>
         <p>{{ meta.author }}</p>
         <!-- <p>{{ meta.gcm.name }}: {{ meta.gcm.url }}</p> -->
         <h2>Examples</h2>
         <ul>
-            <li @each="e in examples"><a @href="{{e.url}}">{{e.name}}</a></li>
+            <li @each="e in examples"><a @href="aaa {{e.url}}">{{e.name}}</a>
+            </li>
         </ul>
     </div>
     <script type="module">
@@ -25,16 +26,16 @@
         const app = $.create({
             title: 'ShadowPlay Documents',
             meta: {
-            	author: 'Dallas Lu',
-            	version: '0.0.1'
+                author: 'Dallas Lu',
+                version: '0.0.1'
             },
             examples: [{
-				name: 'Basic',
-				url: 'basic.html' 
-			},{
-				name: 'Loop',
-				url: 'loop.html'
-			}]
+                name: 'Basic',
+                url: 'basic.html' 
+            },{
+                name: 'Loop',
+                url: 'loop.html'
+            }]
         }, {
 
         }, {}).possess('#app');
