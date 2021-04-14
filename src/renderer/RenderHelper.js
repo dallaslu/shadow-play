@@ -18,9 +18,8 @@ class RenderHelper {
                     get: (target, propKey, receiver) => {
                         let v = target[propKey];
                         if (typeof propKey !== 'symbol' && typeof v !== 'object') {
-                            let shadow = target[Core.shadowSymbol];
-                            let watcherAttr = shadow.watchers = shadow.watchers || {};
-                            let watchers = watcherAttr[propKey] = watcherAttr[propKey] || new Set();
+                            let shadow = Core.resolveShadow(target);
+                            let watchers = Core.getWatchers(shadow, propKey);
                             let newUpdater = false;
                             if (options.debug) {
                                 if (!watchers.has(updater)) {
@@ -80,6 +79,30 @@ class NodeRenderer {
     render(data, context) {
         let fn = this.fn = this.fn || (() => {
             let el = this.options.template;
+
+            let ifExpression = el.getAttribute('@if');
+            if (ifExpression) {
+                el.removeAttribute('@if');
+                let renderer = el[Core.shadowSymbol].ifRenderer = el[Core.shadowSymbol].ifRenderer || new TextRenderer({
+                    template: ifExpression
+                });
+                let author = document.createTextNode('');
+                author[Core.shadowSymbol] = el[Core.shadowSymbol];
+                el.parentNode.insertBefore(author, el);
+                if (renderer.render(data, context).trim() === 'false') {
+                    el.remove();
+                }
+                let f = (data) => {
+                    if (renderer.render(data, context).trim() === 'false') {
+                        el.remove();
+                        return false;
+                    } else {
+                        author.parentNode.insertBefore(el, author);
+                        return true;
+                    }
+                };
+                return f;
+            }
             let loopExpresstion = el.getAttribute('@each') || el.getAttribute('@for');
             if (!loopExpresstion) {
                 if (el.getAttribute('@href')) {
@@ -93,7 +116,7 @@ class NodeRenderer {
                 return () => true;
             }
             let author = document.createTextNode('');
-            // author[Core.shadowSymbol] = el[Core.shadowSymbol];
+            author[Core.shadowSymbol] = el[Core.shadowSymbol];
             el.parentNode.insertBefore(author, el);
             el.removeAttribute('@each');
             el.removeAttribute('@for');
@@ -113,6 +136,13 @@ class NodeRenderer {
     }
     return false;
 }`;
+            for (let name of el.getAttributeNames()) {
+                if(/^@/.test(name)){
+                    let value = el.getAttribute(name);
+                    el.removeAttribute(name);
+                    el.setAttribute(name.substring(1), value);
+                }
+            }
             return new Function('context', 'el', 'data', 'RenderHelper', 'author', 'options',
                 functionBody)(context, el, data, RenderHelper, author, { debug: this.options.debug });
         })();

@@ -22,8 +22,16 @@ class ShadowPlay {
         return new ShadowPlay(data, ext, options);
     }
 
+    isPossessed(el) {
+        el = typeof el === 'string' ? document.querySelector(el) : el;
+        return !!el[Core.shadowSymbol];
+    }
+
     possess(el) {
         el = typeof el === 'string' ? document.querySelector(el) : el;
+        if (this.isPossessed(el)) {
+            throw new Error('The element has been possessed!');
+        }
         this.element = el;
         this.app.data = Object.assign({}, this.app.data);
         this.data = DeepProxy.create(this.app.data, {
@@ -35,9 +43,8 @@ class ShadowPlay {
                     if (typeof propKey !== 'symbol' && typeof old === 'object') {
                         updaters = copyWatchers(old, value);
                     } else {
-                        let shadow = target[Core.shadowSymbol] = target[Core.shadowSymbol] || {};
-                        let watcherAttr = shadow.watchers = shadow.watchers || {};
-                        let watchers = watcherAttr[propKey];
+                        let shadow = Core.resolveShadow(target);
+                        let watchers = Core.getWatchers(shadow, propKey);
                         if (this.options.debug) {
                             console.log((shadow.name ? shadow.name + '.' : '') + propKey.toString() + ' is changed.');
                             console.log(watchers);
@@ -64,13 +71,13 @@ class ShadowPlay {
                 return v;
             }
         }, (obj, parent, key) => {
-            let shadow = obj[Core.shadowSymbol] = obj[Core.shadowSymbol] || {};
+            let shadow = Core.resolveShadow(obj);
             shadow.key = key;
             shadow.name = (function() {
                 if (!parent) {
                     return key;
                 }
-                let parentShadow = parent[Core.shadowSymbol];
+                let parentShadow = Core.resolveShadow(parent);
                 return (parentShadow.name ? parentShadow.name + '.' : '') + key;
             })();
         }, k => k !== Core.shadowSymbol);
