@@ -4,8 +4,8 @@
 <head>
     <title>Shadow Play Documents</title>
     <style>
-    .muted{
-    	opacity: .333;
+        .muted{
+        opacity: .333;
     }
     </style>
 </head>
@@ -14,7 +14,7 @@
     <div id="app">
         <h1>{{ title }} <span class="muted">v{{meta.version}}</span></h1>
         <p>{{ meta.author }}</p>
-        <!-- <p>{{ meta.gcm.name }}: {{ meta.gcm.url }}</p> -->
+        <p><a @href="{{ meta.gcm.url }}">{{ meta.gcm.name }}</a></p>
         <h2>Examples</h2>
         <ul>
             <li @each="e in examples"><a @href="{{e.url}}">{{e.name}}</a></li>
@@ -25,19 +25,27 @@
         const app = $.create({
             title: 'ShadowPlay Documents',
             meta: {
-            	author: 'Dallas Lu',
-            	version: '0.0.1'
+                author: 'Dallas Lu',
+                version: '0.0.1',
+                gcm: {
+                    name: 'Github',
+                    url: 'https://github.com/dallaslu/shadow-play'
+                }
             },
             examples: [{
-				name: 'Basic',
-				url: 'basic.html' 
-			},{
-				name: 'Loop',
-				url: 'loop.html'
-			}]
+                name: 'Basic',
+                url: 'basic.html' 
+            },{
+                name: 'Loop',
+                url: 'loop.html'
+            }]
         }, {
 
-        }, {}).possess('#app');
+        }, {
+            debug: true
+        }).possess('#app');
+
+        window.app = app;
     </script>
 </body>
 

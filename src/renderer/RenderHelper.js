@@ -3,17 +3,16 @@ import DeepProxy from '../core/DeepProxy.js'
 import Core from '../core/Core.js'
 
 class RenderHelper {
-    static render(el, data, context) {
-        if (el.nodeName === '#comment') {
+    static render(node, data, context, options) {
+        if (node.nodeName === '#comment') {
             return;
         }
         context = context || {};
-        el.childNodes.forEach(node => {
-            if (node.nodeName === '#comment') {
-                return;
-            }
-            node[Core.shadowSymbol] = node[Core.shadowSymbol] || {};
-            let updater = node[Core.shadowSymbol].updater = node[Core.shadowSymbol].updater || function(data) {
+        options = options || {};
+
+        node[Core.shadowSymbol] = node[Core.shadowSymbol] || {};
+        let updater = node[Core.shadowSymbol].updater = node[Core.shadowSymbol].updater || (function() {
+            let func = function(data) {
                 let nodeShadow = node[Core.shadowSymbol];
                 let proxy = DeepProxy.create(data, {
                     get: (target, propKey, receiver) => {
@@ -22,25 +21,55 @@ class RenderHelper {
                             let shadow = target[Core.shadowSymbol];
                             let watcherAttr = shadow.watchers = shadow.watchers || {};
                             let watchers = watcherAttr[propKey] = watcherAttr[propKey] || new Set();
+                            let newUpdater = false;
+                            if (options.debug) {
+                                if (!watchers.has(updater)) {
+                                    newUpdater = true;
+                                    console.log('adding watcher for ' + (shadow.name ? shadow.name + '.' : '') + propKey.toString() + ':');
+                                    console.log(node);
+                                }
+                            }
                             watchers.add(updater);
+                            if (options.debug) {
+                                if (newUpdater) {
+                                    console.log(watchers);
+                                }
+                            }
                         }
                         return v;
                     }
-                }, obj => {}, k => k !== Core.shadowSymbol, Symbol('watch'));
+                }, obj => {}, k => k !== Core.shadowSymbol);
 
-                let renderer = nodeShadow.renderer = nodeShadow.renderer || (node.nodeName === '#text' ? new TextRenderer({
-                    template: node.data
-                }).complete(
-                    result => node.data = result
-                ) : new NodeRenderer({
-                    template: node
-                }));
+                let renderer = nodeShadow.renderer = nodeShadow.renderer || (function() {
+                    if (node.nodeName === '#text') {
+                        return new TextRenderer({
+                            template: node.data,
+                            debug: options.debug
+                        }).complete(
+                            result => node.data = result
+                        );
+                    } else {
+                        return new NodeRenderer({
+                            template: node,
+                            debug: options.debug
+                        });
+                    }
+                })();
+
                 return renderer.render(proxy, context);
-            };
-            if (updater(data) && node.nodeName !== '#text') {
-                this.render(node, data, context);
             }
-        });
+            if (options.debug) {
+                func.node = node;
+                func.desc = node.nodeName + (node.id ? '#' + node.id : '');
+            }
+            return func;
+        })();
+
+        if (updater(data) && node.childNodes) {
+            node.childNodes.forEach(child => {
+                this.render(child, data, context, options);
+            });
+        }
     }
 }
 
@@ -80,12 +109,12 @@ class NodeRenderer {
         let ${itemName} = data.${listName}[i];
         let newEl = el.cloneNode(true);
         author.parentNode.insertBefore(newEl, author);
-        RenderHelper.render(newEl, data, Object.assign({}, context, {${itemName}:${itemName}}));
+        RenderHelper.render(newEl, data, Object.assign({}, context, {${itemName}:${itemName}}), options);
     }
     return false;
 }`;
-            return new Function('context', 'el', 'data', 'RenderHelper', 'author',
-                functionBody)(context, el, data, RenderHelper, author);
+            return new Function('context', 'el', 'data', 'RenderHelper', 'author', 'options',
+                functionBody)(context, el, data, RenderHelper, author, { debug: this.options.debug });
         })();
         return fn(data, context);
     }
