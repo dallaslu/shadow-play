@@ -15,10 +15,14 @@
         <h1>{{ title }} <span class="muted">v{{meta.version}}</span></h1>
         <p>{{ meta.author }}</p>
         <p><a @href="{{ meta.gcm.url }}">{{ meta.gcm.name }}</a></p>
+        <button @click="one">Click Me!</button>
         <h2>Examples</h2>
         <ul>
-            <li @each="e in examples"><a @href="{{e.url}}">{{e.name}}</a></li>
+            <li @each="e in examples"  @class="abc"><a @href="{{e.url}}">{{e.name}}</a></li>
         </ul>
+        <footer @if="{{footer.display}}">
+            Shadow Play
+        </footer>
     </div>
     <script type="module">
         import $ from './shadow-play.js';
@@ -38,7 +42,10 @@
             },{
                 name: 'Loop',
                 url: 'loop.html'
-            }]
+            }],
+            footer: {
+                display: true
+            }
         }, {
 
         }, {
