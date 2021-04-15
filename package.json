@@ -1,5 +1,5 @@
 {
-  "name": "shadow-play",
+  "name": "shadowshow",
   "version": "0.0.1",
   "description": "",
   "main": "index.js",
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:dallaslu/shadow-play.git"
+    "url": "git@github.com:shadowshow/shadowshow.git"
   },
   "keywords": [
     "Template",
