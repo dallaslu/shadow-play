@@ -43,7 +43,8 @@ const src = {
 // Distribution Path
 const dist = {
     root: 'dist',
-    docStyles: 'dist/assets/css'
+    docs: 'docs',
+    docStyles: 'docs/assets/css'
 }
 
 // package data
@@ -53,7 +54,7 @@ delete pkg.dependencies;
 delete pkg.devDependencies;
 
 function html() {
-    return gulp.src('docs/**/*.html')
+    return gulp.src(src.docs + '/**/*.html')
         // .pipe(frontMatter({ property: 'data.page', remove: true }))
         // .pipe(swig({
         //     setup: function(swig) { swig.setDefaults({ cache: false, loader: swig.loaders.fs(__dirname + '/docs') }); },
@@ -84,7 +85,7 @@ function html() {
         .pipe(htmlbeautify({
 
         }))
-        .pipe(gulp.dest(dist.root))
+        .pipe(gulp.dest(dist.docs))
         .pipe(browserSync.stream({ once: true }));
 }
 
@@ -120,6 +121,7 @@ function js() {
         // }))
         // .pipe(uglify())
         .pipe(gulp.dest('dist/'))
+        .pipe(gulp.dest('docs/'))
         .pipe(terser())
         .pipe(rename({ extname: '.min.js' }))
         .pipe(sourcemaps.write(''))
@@ -136,7 +138,7 @@ function watch() {
         notify: false,
         port: 3000,
         server: {
-            baseDir: "./dist",
+            baseDir: "./docs",
             index: "/index.html"
         },
         watchOptions: {
@@ -144,7 +146,7 @@ function watch() {
         }
     });
 
-    gulp.watch('docs/**/*.html', html);
+    gulp.watch(src.docs + '/**/*.html', html);
     gulp.watch(src.docStyles, css);
     gulp.watch(src.scripts, js);
 }
