@@ -4,7 +4,8 @@ import Core from '../core/Core.js'
 
 class RenderHelper {
     static render(node, data, context, options) {
-        if (node.nodeName === '#comment') {
+        if (node.nodeName === '#comment'
+            || (node.nodeName === '#text' && node.data === '')) {
             return;
         }
         context = context || {};
@@ -92,7 +93,7 @@ class NodeRenderer {
                 if (renderer.render(data, context).trim() === 'false') {
                     el.remove();
                 }
-                let f = (data) => {
+                let f = (data, context) => {
                     if (renderer.render(data, context).trim() === 'false') {
                         el.remove();
                         return false;

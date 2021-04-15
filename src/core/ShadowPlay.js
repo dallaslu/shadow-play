@@ -1,10 +1,8 @@
-import RenderHelper from '../renderer/RenderHelper.js'
-import DeepProxy from './DeepProxy.js'
-import Core from './Core.js'
+import RenderHelper from '../renderer/RenderHelper.js';
+import DeepProxy from './DeepProxy.js';
+import Core from './Core.js';
 
-const DEFAULT_OPTIONS = {
-    elementAttributePrefix: '@'
-};
+let defaultOptions = {};
 
 class ShadowPlay {
     constructor(data, ext, options) {
@@ -12,7 +10,7 @@ class ShadowPlay {
             data: data,
             ext: ext
         }
-        this.options = Object.assign({}, DEFAULT_OPTIONS, options);
+        this.options = Object.assign({}, Core.DEFAULT_OPTIONS, defaultOptions, options);
         if (options.debug) {
             console.log('ShadowPlay Debug Enabled.')
         }
@@ -22,13 +20,20 @@ class ShadowPlay {
         return new ShadowPlay(data, ext, options);
     }
 
+    static config(options) {
+        Object.assign(defaultOptions, Core.DEFAULT_OPTIONS, options);
+    }
+
+    static resetConfig() {
+        defaultOptions = Object.assign({}, Core.DEFAULT_OPTIONS);
+    }
+
     isPossessed(el) {
-        el = typeof el === 'string' ? document.querySelector(el) : el;
-        return !!el[Core.shadowSymbol];
+        return !!Core.resolveElement(el)[Core.shadowSymbol];
     }
 
     possess(el) {
-        el = typeof el === 'string' ? document.querySelector(el) : el;
+        el = Core.resolveElement(el);
         if (this.isPossessed(el)) {
             throw new Error('The element has been possessed!');
         }
@@ -41,7 +46,7 @@ class ShadowPlay {
                 if (old !== value) {
                     let updaters = [];
                     if (typeof propKey !== 'symbol' && typeof old === 'object') {
-                        updaters = copyWatchers(old, value);
+                        updaters = copyShadowAndCollectUpdaters(old, value);
                     } else {
                         let shadow = Core.resolveShadow(target);
                         let watchers = Core.getWatchers(shadow, propKey);
@@ -93,7 +98,7 @@ class ShadowPlay {
     }
 }
 
-function copyWatchers(old, value, updaters) {
+function copyShadowAndCollectUpdaters(old, value, updaters) {
     updaters = updaters || [];
     let shadow = old[Core.shadowSymbol];
     let watcherAttr = shadow.watchers = shadow.watchers || {};
@@ -103,7 +108,7 @@ function copyWatchers(old, value, updaters) {
     value[Core.shadowSymbol] = old[Core.shadowSymbol];
     for (let k in old) {
         if (typeof k !== 'symbol' && typeof old[k] === 'object') {
-            updaters.push.apply(updaters, copyWatchers(old[k], value[k]));
+            updaters.push.apply(updaters, copyShadowAndCollectUpdaters(old[k], value[k]));
         }
     }
     return updaters;

@@ -2,6 +2,21 @@ import ShadowData from './ShadowData.js';
 
 const shadowSymbol = Symbol("shadow");
 
+const DEFAULT_OPTIONS = {
+    elementAttributePrefix: '@',
+    elementAttributes: {
+        conditional: 'if',
+        loop: 'each',
+        click: 'click',
+        change: 'change'
+    },
+    templateDef: {
+        open: '{{',
+        close: '}}'
+    },
+    debug: false
+};
+
 function getWatchers(obj, key) {
     let watcherMapper = resolveWacherMapper(obj);
     let watchers = watcherMapper[key] = watcherMapper[key] || new Set();
@@ -24,8 +39,14 @@ function resolveShadow(target) {
     return shadow;
 }
 
+function resolveElement(el) {
+    return typeof el === 'string' ? document.querySelector(el) : el;
+}
+
 export default {
     shadowSymbol,
     getWatchers,
-    resolveShadow 
+    resolveShadow,
+    resolveElement,
+    DEFAULT_OPTIONS
 }

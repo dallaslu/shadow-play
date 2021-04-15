@@ -1,0 +1,25 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+.muted {
+    opacity: .333;
+}
+
+.header {
+	.nav-bar{
+		height: 3.5rem;
+		line-height: 3.5rem;
+		padding: 0 1rem;
+
+		&.nav-bar-dark{
+			background: rgba(0,0,0, .667);
+			color: #fff;
+		}
+	}
+    nav.fixed {
+    	position: fixed;
+    }
+}
+

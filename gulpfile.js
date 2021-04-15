@@ -7,6 +7,10 @@ const sourcemaps = require('gulp-sourcemaps')
 const htmltidy = require('gulp-htmltidy');
 const browserify = require('gulp-browserify');
 
+const sass = require('gulp-sass');
+const minifyCSS = require('gulp-csso');
+const postcss = require('gulp-postcss');
+
 const swig = require('gulp-swig');
 const frontMatter = require('gulp-front-matter');
 const htmlbeautify = require('gulp-html-beautify');
@@ -32,13 +36,14 @@ const browserSync = require('browser-sync').create();
 const src = {
     root: 'src',
     docs: 'docs',
+    docStyles: 'docs/assets/scss/**/*.scss',
     scripts: 'src/**/*.js',
 }
 
 // Distribution Path
 const dist = {
     root: 'dist',
-    docs: 'dist/docs'
+    docStyles: 'dist/assets/css'
 }
 
 // package data
@@ -83,6 +88,29 @@ function html() {
         .pipe(browserSync.stream({ once: true }));
 }
 
+//compile scss into css
+function css() {
+    return gulp.src(src.docStyles)
+        .pipe(sourcemaps.init())
+        .pipe(sass().on('error', sass.logError))
+        .pipe(autoprefixer({
+            browsersList: [
+                "last 2 versions",
+                "ie >= 11"
+            ]
+        }))
+        .pipe(sourcemaps.write(''))
+        .pipe(gulp.dest(dist.docStyles))
+        .pipe(sourcemaps.init({ loadMaps: true }))
+        .pipe(filter('**/*.css'))
+        .pipe(minifyCSS())
+        .pipe(rename({ extname: '.min.css' }))
+        .pipe(sourcemaps.write(''))
+        .pipe(gulp.dest(dist.docStyles))
+        .pipe(filter('**/*.css'))
+        .pipe(browserSync.stream({ once: true }));
+}
+
 function js() {
     return gulp.src(src.scripts)
         .pipe(sourcemaps.init({ loadMaps: true }))
@@ -117,12 +145,15 @@ function watch() {
     });
 
     gulp.watch('docs/**/*.html', html);
+    gulp.watch(src.docStyles, css);
     gulp.watch(src.scripts, js);
 }
 
+exports.html = html;
 exports.js = js;
+exports.css = css;
 exports.watch = watch;
 exports.clean = cleanDist;
-exports.build = gulp.series(gulp.parallel(html, js));
-exports.package = gulp.series(cleanDist, gulp.parallel(html, js));
-exports.default = gulp.series(gulp.parallel(html, js, watch));
+exports.build = gulp.series(gulp.parallel(html, css, js));
+exports.package = gulp.series(cleanDist, gulp.parallel(html, css, js));
+exports.default = gulp.series(gulp.parallel(html, css, js, watch));
