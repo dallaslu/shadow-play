@@ -34,10 +34,10 @@ const browserSync = require('browser-sync').create();
 
 // Project Path
 const src = {
-    root: 'src',
-    docs: 'docs',
-    docStyles: 'docs/assets/scss/**/*.scss',
-    scripts: 'src/**/*.js',
+    root: 'src/',
+    docs: 'src/docs',
+    docStyles: 'src/docs/assets/scss/**/*.scss',
+    scripts: 'src/js/**/*.js',
 }
 
 // Distribution Path
