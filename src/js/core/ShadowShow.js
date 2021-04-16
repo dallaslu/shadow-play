@@ -4,7 +4,7 @@ import Core from './Core.js';
 
 let defaultOptions = {};
 
-class ShadowPlay {
+class ShadowShow {
     constructor(data, ext, options) {
         this.app = {
             data: data,
@@ -12,12 +12,12 @@ class ShadowPlay {
         }
         this.options = Object.assign({}, Core.DEFAULT_OPTIONS, defaultOptions, options);
         if (options.debug) {
-            console.log('ShadowPlay Debug Enabled.')
+            console.log('ShadowShow Debug Enabled.')
         }
     }
 
     static create(data, ext, options) {
-        return new ShadowPlay(data, ext, options);
+        return new ShadowShow(data, ext, options);
     }
 
     static config(options) {
@@ -114,4 +114,4 @@ function copyShadowAndCollectUpdaters(old, value, updaters) {
     return updaters;
 }
 
-export default ShadowPlay;
+export default ShadowShow;
