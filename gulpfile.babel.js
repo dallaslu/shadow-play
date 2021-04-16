@@ -1,12 +1,13 @@
 import gulp from 'gulp';
-import babel from 'gulp-babel';
 import concat from 'gulp-concat';
 import rename from 'gulp-rename';
 import filter from 'gulp-filter';
 import terser from 'gulp-terser';
 import sourcemaps from 'gulp-sourcemaps';
 import htmltidy from 'gulp-htmltidy';
-import browserify from 'gulp-browserify';
+
+import browserify from 'browserify';
+import source from 'vinyl-source-stream'
 
 import sass from 'gulp-sass';
 import minifyCSS from 'gulp-csso';
@@ -57,7 +58,7 @@ gulp.task('html', () => {
 });
 
 //compile scss into css
-gulp.task('css', ()=>{
+gulp.task('css', () => {
     return gulp.src(src.docStyles)
         .pipe(sourcemaps.init())
         .pipe(sass().on('error', sass.logError))
@@ -78,30 +79,32 @@ gulp.task('css', ()=>{
         .pipe(browserSync.stream({ once: true }));
 });
 
-gulp.task('js', () => {
+gulp.task('copy-js-to-dev', () => {
     return gulp.src(src.scripts)
-        // .pipe(sourcemaps.init({ loadMaps: true }))
-        // .pipe(browserify({
-        //     debug: true,
-        //     transform: ["babelify", "brfs"]
-        // }))
-        // .pipe(uglify())
-        // .pipe(gulp.dest('dist/'))
-        // .pipe(gulp.dest('docs/'))
-        // .pipe(gulp.dest('build/'))
-        // .pipe(terser())
-        // .pipe(rename({ extname: '.min.js' }))
-        // .pipe(sourcemaps.write(''))
         .pipe(gulp.dest(build.scripts))
-        .pipe(babel())
-        .pipe(concat('shadowshow.js'))
-        .pipe(gulp.dest(dist.scripts))
+        .pipe(browserSync.stream({ once: true }));
+});
+
+gulp.task('combine-js', () => {
+    return browserify({
+            entries: [build.scripts + '/shadowshow.js'],
+            debug: true
+        })
+        .transform('babelify', { presets: ['es2015'] })
+        .bundle()
+        .pipe(source("shadowshow.js"))
+        .pipe(gulp.dest(dist.scripts));
+});
+
+gulp.task('compress-js', () => {
+    return gulp.src(dist.scripts + '/**/*.js')
         .pipe(uglify())
         .pipe(gulp.dest(dist.docsScripts))
         .pipe(rename({ extname: '.min.js' }))
-        .pipe(gulp.dest(dist.scripts))
-        .pipe(browserSync.stream({ once: true }));
+        .pipe(gulp.dest(dist.scripts));
 });
+
+gulp.task('js', gulp.series('copy-js-to-dev', 'combine-js', 'compress-js'));
 
 gulp.task('watch', gulp.series(() => {
     browserSync.init({
@@ -121,7 +124,7 @@ gulp.task('watch', gulp.series(() => {
     gulp.watch(src.scripts, gulp.parallel('js'));
 }));
 
-gulp.task('default', gulp.series(gulp.parallel('html','css','js'), gulp.parallel('watch')));
+gulp.task('default', gulp.series(gulp.parallel('html', 'css', 'js'), gulp.parallel('watch')));
 
 // // package data
 // let pkg = require('./package.json');
@@ -166,53 +169,6 @@ gulp.task('default', gulp.series(gulp.parallel('html','css','js'), gulp.parallel
 //         .pipe(browserSync.stream({ once: true }));
 // }
 
-
-
-// function js() {
-//     return gulp.src(src.scripts)
-//         .pipe(sourcemaps.init({ loadMaps: true }))
-//         // .pipe(browserify({
-//         //     debug: true,
-//         //     transform: ["babelify", "brfs"]
-//         // }))
-//         // .pipe(uglify())
-//         .pipe(gulp.dest('dist/'))
-//         .pipe(gulp.dest('docs/'))
-//         .pipe(gulp.dest('build/'))
-//         .pipe(terser())
-//         .pipe(rename({ extname: '.min.js' }))
-//         .pipe(sourcemaps.write(''))
-//         .pipe(gulp.dest('dist/'))
-//         .pipe(browserSync.stream({ once: true }));
-// }
-
 // function cleanDist(cb) {
 //     dele(dist.root, cb);
 // }
-
-// function watch() {
-//     browserSync.init({
-//         notify: false,
-//         port: 3000,
-//         server: {
-//             baseDir: "./build",
-//             index: "/index.html"
-//         },
-//         watchOptions: {
-//             awaitWriteFinish: true
-//         }
-//     });
-
-//     gulp.watch(src.docs + '/**/*.html', html);
-//     gulp.watch(src.docStyles, css);
-//     gulp.watch(src.scripts, js);
-// }
-
-// exports.html = html;
-// exports.js = js;
-// exports.css = css;
-// exports.watch = watch;
-// exports.clean = cleanDist;
-// exports.build = gulp.series(gulp.parallel(html, css, js));
-// exports.package = gulp.series(cleanDist, gulp.parallel(html, css, js));
-// exports.default = gulp.series(gulp.parallel(html, css, js, watch));
