@@ -29,35 +29,39 @@
             Shadow Play
         </footer>
     </div>
-    <script type="module">
-        import $ from './assets/js/shadowshow.js';
-        const app = $.create({
-            title: 'ShadowShow Documents',
-            meta: {
-                author: 'Dallas Lu',
-                version: '0.0.1',
-                gcm: {
-                    name: 'Github',
-                    url: 'https://github.com/shadowshow/shadowshow'
+    <script type="module" src="assets/js/shadowshow.js"></script>
+    <script>
+    window.addEventListener('load', function() {
+        (function($) {
+            const app = $.create({
+                title: 'ShadowShow Documents',
+                meta: {
+                    author: 'Dallas Lu',
+                    version: '0.0.1',
+                    gcm: {
+                        name: 'Github',
+                        url: 'https://github.com/shadowshow/shadowshow'
+                    }
+                },
+                examples: [{
+                    name: 'Basic',
+                    url: 'basic.html'
+                }, {
+                    name: 'Loop',
+                    url: 'loop.html'
+                }],
+                footer: {
+                    display: true
                 }
-            },
-            examples: [{
-                name: 'Basic',
-                url: 'basic.html' 
-            },{
-                name: 'Loop',
-                url: 'loop.html'
-            }],
-            footer: {
-                display: true
-            }
-        }, {
+            }, {
 
-        }, {
-            debug: true
-        }).possess('#app');
+            }, {
+                debug: true
+            }).possess('#app');
 
-        window.app = app;
+            window.app = app;
+        })(ShadowPlay);
+    });
     </script>
 </body>
 

@@ -98,6 +98,7 @@ gulp.task('combine-js', () => {
 
 gulp.task('compress-js', () => {
     return gulp.src(dist.scripts + '/**/*.js')
+        .pipe(filter(file=>!/min\.js$/.test(file.path)))
         .pipe(uglify())
         .pipe(gulp.dest(dist.docsScripts))
         .pipe(rename({ extname: '.min.js' }))
