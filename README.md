@@ -1,2 +1,2 @@
-# shadow-play
-A javascript library
+# ShadowShow.js
+A javascript framework.
