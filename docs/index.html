@@ -1,37 +1,4 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no" />
-    <title>ShadowShow Documents</title>
-    <link rel="stylesheet" type="text/css" href="assets/css/style.css" />
-</head>
-
-<body>
-    <div id="app">
-        <header class="header">
-            <nav class="nav-bar nav-bar-dark">
-                <h1>{{ title }} <span class="muted">v{{meta.version}}</span></h1>
-            </nav>
-        </header>
-        <main>
-            <p>{{ meta.author }}</p>
-            <p><a @href="{{ meta.gcm.url }}">{{ meta.gcm.name }}</a></p>
-            <button @click="one">Click Me!</button>
-            <h2>Examples</h2>
-            <ul>
-                <li @each="e in examples" @class="abc"><a @href="{{e.url}}">{{e.name}}</a></li>
-            </ul>
-        </main>
-        <footer @if="{{footer.display}}">
-            Shadow Play
-        </footer>
-    </div>
-    <script type="module" src="assets/js/shadowshow.js"></script>
-    <script>
-    window.addEventListener('load', function() {
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,shrink-to-fit=no"><title>ShadowShow Documents</title><link rel="stylesheet" href="assets/css/style.css"></head><body><div id="app"><header class="header"><nav class="nav-bar nav-bar-dark"><h1>{{ title }} <span class="muted">v{{meta.version}}</span></h1></nav></header><main><p>{{ meta.author }}</p><p><a @href="{{ meta.gcm.url }}">{{ meta.gcm.name }}</a></p><button @click="one">Click Me!</button><h2>Examples</h2><ul><li @each="e in examples" @class="abc"><a @href="{{e.url}}">{{e.name}}</a></li></ul></main><footer @if="{{footer.display}}">Shadow Play</footer></div><script type="module" src="assets/js/shadowshow.js"></script><script>window.addEventListener('load', function() {
         (function($) {
             const app = $.create({
                 title: 'ShadowShow Documents',
@@ -61,8 +28,4 @@
 
             window.app = app;
         })(ShadowShow);
-    });
-    </script>
-</body>
-
-</html>
+    });</script></body></html>

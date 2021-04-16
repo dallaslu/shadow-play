@@ -5,6 +5,7 @@ import filter from 'gulp-filter';
 import terser from 'gulp-terser';
 import sourcemaps from 'gulp-sourcemaps';
 import htmltidy from 'gulp-htmltidy';
+import htmlmin from 'gulp-htmlmin';
 
 import browserify from 'browserify';
 import source from 'vinyl-source-stream'
@@ -53,6 +54,16 @@ const build = {
 gulp.task('html', () => {
     return gulp.src(src.docs + '/**/*.html')
         .pipe(gulp.dest(build.root))
+        .pipe(htmlmin({
+            removeComments: true,
+            collapseWhitespace: true,
+            collapseBooleanAttributes: true, // <input checked="true"/> ==> <input checked />
+            removeEmptyAttributes: true, // <input id="" /> ==> <input />
+            removeScriptTypeAttributes: true, // remove `type="text/javascript"` from <script> 
+            removeStyleLinkTypeAttributes: true, // remove `type="text/css"` from <style> <link> 
+            minifyJS: true,
+            minifyCSS: true
+        }))
         .pipe(gulp.dest(dist.docs))
         .pipe(browserSync.stream({ once: true }));
 });
